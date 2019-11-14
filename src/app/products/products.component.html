@@ -1,0 +1,26 @@
+  <mat-card>
+      <a mat-flat-button color="primary" [routerLink]="['/product-add']"><mat-icon>add</mat-icon></a>
+      <table mat-table [dataSource]="data" class="example-table"
+           matSort matSortActive="prod_name" matSortDisableClear matSortDirection="asc">
+
+      <!-- Product Name Column -->
+      <ng-container matColumnDef="prod_name">
+        <th mat-header-cell *matHeaderCellDef>Product Name</th>
+        <td mat-cell *matCellDef="let row">{{row.idProduct}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prod_desc">
+        <th mat-header-cell *matHeaderCellDef>Descripcion producto</th>
+        <td mat-cell *matCellDef="let row">{{row.nameProduct}}</td>
+      </ng-container>
+
+      <!-- Product Price Column -->
+      <ng-container matColumnDef="prod_price">
+        <th mat-header-cell *matHeaderCellDef>Product Price</th>
+        <td mat-cell *matCellDef="let row">$ {{row.prod_price}}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="element-row" *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/product-details/', row._id]"></tr>
+    </table>
+    </mat-card>
