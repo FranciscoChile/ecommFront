@@ -50,3 +50,15 @@ table {
 tr.element-row:hover {
   background: #f5f5f5;
 }
+
+.invisible{
+  display: block;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+
+.mat-icon {
+  vertical-align:middle;
+}
+.upload-drop-zone { border: dotted 3px lightgray; height: 100; padding: 100px 20px; }

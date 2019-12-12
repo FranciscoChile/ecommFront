@@ -26,40 +26,50 @@ export class ApiService {
   }
 
   getProduct(id: number): Observable<Product> {
-    const url = `${apiUrl}/${id}`;
+    const url = '${apiUrl}/${id}';
     return this.http.get<Product>(url).pipe(
-      tap(_ => console.log(`fetched product id=${id}`)),
-      catchError(this.handleError<Product>(`getProduct id=${id}`))
+      tap(_ => console.log('fetched product id=${id}')),
+      catchError(this.handleError<Product>('getProduct id=${id}'))
     );
   }
 
-  addProduct (product): Observable<Product> {
-    return this.http.post<Product>(apiUrl, product, httpOptions).pipe(
-      tap((product: Product) => console.log(`added product w/ id=${product.idProduct}`)),
-      catchError(this.handleError<Product>('addProduct'))
-    );
+  addProduct (product: Product): Observable<Product> {
+
+    return this.http.post<Product>(apiUrl, product, httpOptions)
+      .pipe(
+        tap((product: Product) => console.log('added product w/ id=${product.idProduct}')),
+        catchError(this.handleError('addProduct', product))
+      );
+
+    // return this.http.post<Product>(apiUrl, product, httpOptions).pipe(
+    //   tap((product: Product) => console.log('added product w/ id=${product.idProduct}')),
+    //   catchError(this.handleError<Product>('addProduct'))
+    // );
+
   }
 
   addFile (file): Observable<FilesUpload> {
     return this.http.post<FilesUpload>(apiUrl + '/uploadFiles', file, httpOptions).pipe(
-      tap((file: FilesUpload) => console.log(`added file w/ id=${file.id}`)),
+      tap((file: FilesUpload) => console.log('added file w/ id=${file.id}')),
       catchError(this.handleError<FilesUpload>('addFile'))
     );
   }
 
   updateProduct (id, product): Observable<any> {
-    const url = `${apiUrl}/${id}`;
-    return this.http.put(url, product, httpOptions).pipe(
-      tap(_ => console.log(`updated product id=${id}`)),
+    const url = '${apiUrl}/${id}';
+    return this.http.post(apiUrl, product, httpOptions).pipe(
+      tap(_ => console.log('updated product id=${id}')),
       catchError(this.handleError<any>('updateProduct'))
     );
   }
 
   deleteProduct (id): Observable<Product> {
-    const url = `${apiUrl}/${id}`;
+    //const url = '${apiUrl}/${id}';
+
+let url = apiUrl + "/" + id;
 
     return this.http.delete<Product>(url, httpOptions).pipe(
-      tap(_ => console.log(`deleted product id=${id}`)),
+      tap(_ => console.log('deleted product id=${id}')),
       catchError(this.handleError<Product>('deleteProduct'))
     );
   }

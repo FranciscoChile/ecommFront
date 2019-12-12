@@ -1,26 +1,165 @@
   <mat-card>
       <a mat-flat-button color="primary" [routerLink]="['/product-add']"><mat-icon>add</mat-icon></a>
-      <table mat-table [dataSource]="data" class="example-table"
-           matSort matSortActive="prod_name" matSortDisableClear matSortDirection="asc">
+  </mat-card>
 
-      <!-- Product Name Column -->
-      <ng-container matColumnDef="prod_name">
-        <th mat-header-cell *matHeaderCellDef>Product Name</th>
-        <td mat-cell *matCellDef="let row">{{row.idProduct}}</td>
-      </ng-container>
+  <mat-accordion>
 
-      <ng-container matColumnDef="prod_desc">
-        <th mat-header-cell *matHeaderCellDef>Descripcion producto</th>
-        <td mat-cell *matCellDef="let row">{{row.nameProduct}}</td>
-      </ng-container>
+    <mat-expansion-panel [expanded]='f_firstPanel' [disabled]='!f_firstPanel'>
 
-      <!-- Product Price Column -->
-      <ng-container matColumnDef="prod_price">
-        <th mat-header-cell *matHeaderCellDef>Product Price</th>
-        <td mat-cell *matCellDef="let row">$ {{row.prod_price}}</td>
-      </ng-container>
+        <div class="example-header">
+            <mat-form-field>
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+            </mat-form-field>
+        </div>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row class="element-row" *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/product-details/', row._id]"></tr>
-    </table>
-    </mat-card>
+        <table mat-table [dataSource]="dataSource" class="example-table"
+            matSort matSortActive="sku" matSortDisableClear matSortDirection="asc">
+
+        <!-- Product Name Column -->
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sku</th>
+          <td mat-cell *matCellDef="let row" >{{row.sku}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nameProduct">
+          <th mat-header-cell *matHeaderCellDef>Product Name</th>
+          <td mat-cell *matCellDef="let row">{{row.nameProduct}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Descripcion producto</th>
+          <td mat-cell *matCellDef="let row">{{row.description}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="priceList">
+          <th mat-header-cell *matHeaderCellDef>Price List</th>
+          <td mat-cell *matCellDef="let row">$ {{row.priceList}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="priceSell">
+          <th mat-header-cell *matHeaderCellDef>Price Sell</th>
+          <td mat-cell *matCellDef="let row">$ {{row.priceSell}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef>Stock</th>
+          <td mat-cell *matCellDef="let row">{{row.stock}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>Active</th>
+            
+          <ng-container *matCellDef="let row">
+              <td mat-cell *ngIf="row.active == 1"  >
+                  <mat-icon color="accent">thumb_up</mat-icon>          
+              </td>
+                <td mat-cell *ngIf="row.active == 0" >
+                    <mat-icon>thumb_down</mat-icon>          
+                </td>
+              </ng-container>              
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row class="element-row" *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"></tr>
+      </table>
+
+      <mat-paginator #paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20]"
+        [showFirstLastButtons]="true">
+      </mat-paginator>
+
+    </mat-expansion-panel>
+
+
+    <mat-expansion-panel [expanded]='f_secondPanel' [disabled]='!f_secondPanel'>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Editar Producto</mat-panel-title>
+      </mat-expansion-panel-header>
+
+        <form [formGroup]="productForm" (ngSubmit)="onFormSubmit(productForm.value)">
+
+            <mat-form-field class="invisible example-full-width" >
+                <input matInput placeholder="Id" formControlName="idProduct">
+              </mat-form-field>
+    
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Sku" formControlName="sku"
+                    [errorStateMatcher]="matcher">
+            <mat-error>
+              <span *ngIf="!productForm.get('sku').valid && productForm.get('sku').touched">Please enter sku</span>
+            </mat-error>
+          </mat-form-field>
+
+              
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Product Name" formControlName="nameProduct"
+                   [errorStateMatcher]="matcher">
+            <mat-error>
+              <span *ngIf="!productForm.get('nameProduct').valid && productForm.get('nameProduct').touched">Please enter Product Name</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Description" formControlName="description"
+                   [errorStateMatcher]="matcher">
+            <mat-error>
+              <span *ngIf="!productForm.get('description').valid && productForm.get('description').touched">Please enter Product Description</span>
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Price List" formControlName="priceList"
+                   [errorStateMatcher]="matcher">
+            <mat-error>
+              <span *ngIf="!productForm.get('priceList').valid && productForm.get('priceList').touched">Please enter Product Price</span>
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field class="example-full-width">
+            <input matInput placeholder="Price Sell" formControlName="priceSell"
+                   [errorStateMatcher]="matcher">
+            <mat-error>
+              <span *ngIf="!productForm.get('priceSell').valid && productForm.get('priceSell').touched">Please enter Product Price</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+              <input matInput placeholder="Stock" formControlName="stock"
+                     [errorStateMatcher]="matcher">
+              <mat-error>
+                <span *ngIf="!productForm.get('stock').valid && productForm.get('stock').touched">Please enter stock</span>
+              </mat-error>
+          </mat-form-field>
+          
+          <mat-slide-toggle formControlName="active" >Active</mat-slide-toggle>
+
+          <div class="button-row">
+            <button type="submit" [disabled]="!productForm.valid" mat-flat-button color="primary"><mat-icon>save</mat-icon></button>            
+            <button type="button" mat-flat-button color="primary" (click)="delete()">Delete</button>
+            <button type="button" mat-flat-button color="primary" (click)="cancelEdit()">Cancel</button>      
+          </div>
+        </form>
+
+        <div [fileUploadInputFor]="fileUploadQueue" class="upload-drop-zone">
+            Just drag and drop files here
+        </div>
+         
+         
+        <div style="width: 500px">
+            <mat-file-upload-queue #fileUploadQueue
+                [fileAlias]="'file'"
+                [httpUrl]="'http://localhost:8180/jax-rs-jersey-application-sample'" multiple>
+            
+                <mat-file-upload [file]="file" [id]="i" *ngFor="let file of fileUploadQueue.files; let i = index"></mat-file-upload>
+            </mat-file-upload-queue>
+        </div>
+
+
+
+      </mat-expansion-panel>
+
+
+
+    
+  </mat-accordion>

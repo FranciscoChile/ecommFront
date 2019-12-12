@@ -1,31 +1,59 @@
 <mat-card >
     <form [formGroup]="productForm" (ngSubmit)="onFormSubmit()">
+
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Product Name" formControlName="prod_name"
-               [errorStateMatcher]="matcher">
-        <mat-error>
-          <span *ngIf="!productForm.get('prod_name').valid && productForm.get('prod_name').touched">Please enter Product Name</span>
-        </mat-error>
+          <input matInput placeholder="Sku" formControlName="sku"
+                  [errorStateMatcher]="matcher">
+          <mat-error>
+            <span *ngIf="!productForm.get('sku').valid && productForm.get('sku').touched">Please enter sku</span>
+          </mat-error>
       </mat-form-field>
+
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Product Desc" formControlName="prod_desc"
+        <input matInput placeholder="Product Name" formControlName="nameProduct"
                [errorStateMatcher]="matcher">
         <mat-error>
-          <span *ngIf="!productForm.get('prod_desc').valid && productForm.get('prod_desc').touched">Please enter Product Description</span>
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field class="example-full-width">
-        <input matInput placeholder="Product Price" formControlName="prod_price"
-               [errorStateMatcher]="matcher">
-        <mat-error>
-          <span *ngIf="!productForm.get('prod_price').valid && productForm.get('prod_price').touched">Please enter Product Price</span>
+          <span *ngIf="!productForm.get('nameProduct').valid && productForm.get('nameProduct').touched">Please enter Product Name</span>
         </mat-error>
       </mat-form-field>
 
-      <input type="file" (change)="onFileChange($event)" />
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Product Desc" formControlName="description"
+               [errorStateMatcher]="matcher">
+        <mat-error>
+          <span *ngIf="!productForm.get('description').valid && productForm.get('description').touched">Please enter Product Description</span>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Product Price List" formControlName="priceList"
+               [errorStateMatcher]="matcher">
+        <mat-error>
+          <span *ngIf="!productForm.get('priceList').valid && productForm.get('priceList').touched">Please enter Product Price</span>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Product Price Sell" formControlName="priceSell"
+               [errorStateMatcher]="matcher">
+        <mat-error>
+          <span *ngIf="!productForm.get('priceSell').valid && productForm.get('priceSell').touched">Please enter Product Price</span>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+          <input matInput placeholder="Stock" formControlName="stock"
+                 [errorStateMatcher]="matcher">
+          <mat-error>
+            <span *ngIf="!productForm.get('stock').valid && productForm.get('stock').touched">Please enter Product Price</span>
+          </mat-error>
+      </mat-form-field>
+  
+      <mat-slide-toggle formControlName="active" >Active</mat-slide-toggle>
 
       <div class="button-row">
         <button type="submit" [disabled]="!productForm.valid || productForm.prestine" mat-flat-button color="primary"><mat-icon>save</mat-icon></button>
+        <button type="button" mat-flat-button color="primary" (click)="cancelEdit()">Cancel</button>      
       </div>
 
 

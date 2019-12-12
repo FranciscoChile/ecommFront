@@ -14,7 +14,7 @@ import {
   MatButtonModule,
   MatCardModule,
   MatFormFieldModule, MatSidenavModule, MatProgressBarModule,
-  MatToolbarModule, MatListModule } from "@angular/material";
+  MatToolbarModule, MatListModule, MatSlideToggleModule } from "@angular/material";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './products/products.component';
@@ -26,6 +26,9 @@ import { SideNavComponent } from './side-nav/side-nav.component';
 import { LayoutModule } from '@angular/cdk/layout';
 import { FileDropDirective, FileSelectDirective } from "ng2-file-upload";
 import { RouterModule } from "@angular/router";
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFileUploadModule } from 'angular-material-fileupload';
 
 @NgModule({
   declarations: [
@@ -51,13 +54,15 @@ import { RouterModule } from "@angular/router";
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatFormFieldModule, SlimLoadingBarModule, MatProgressBarModule,
+    MatFormFieldModule, SlimLoadingBarModule.forRoot(), MatProgressBarModule,
     MatSidenavModule, MatToolbarModule, LayoutModule, MatListModule,
+    MatExpansionModule, MatTabsModule, MatSlideToggleModule, MatFileUploadModule,
     RouterModule.forRoot([
       {path: '', component: ProductAddComponent}
     ]/*, {useHash: false}*/),
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [MatSortModule]
 })
 export class AppModule { }

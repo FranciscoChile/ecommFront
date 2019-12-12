@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../api.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Component({
   selector: 'app-product-add',
@@ -17,45 +18,56 @@ export class ProductAddComponent implements OnInit {
     private router: Router, 
     private api: ApiService, 
     private formBuilder: FormBuilder,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private slimLoadingBarService: SlimLoadingBarService
     ) { }
 
   ngOnInit() {
     this.productForm = this.formBuilder.group({
-      'prod_name' : [null, Validators.required],
-      'prod_desc' : [null, Validators.required],
-      'prod_price' : [null, Validators.required],
-      'prod_file': ["", null]
+      'sku' : [null, Validators.required],
+      'nameProduct' : [null, Validators.required],
+      'description' : [null, Validators.required],
+      'priceList' : [null, Validators.required],
+      'priceSell' : [null, Validators.required],
+      'stock' : [null, Validators.required],
+      'active' : [null, Validators.required]
     });
 
   }
 
   onFormSubmit() {
+
+    let active = this.productForm.value['active'] ? 1 : 0;
+    this.productForm.value['active'] = active;
+    
     this.api.addProduct(this.productForm.value)
-      .subscribe(res => {
-          let id = res['_id']; 
-          this.router.navigate(['/product-details', id]);
+      .subscribe(product => {          
+          console.log(product);
+          this.router.navigate(['/products']);
+          //let id = res['_id']; 
+          //this.router.navigate(['/product-details', 1]);
         }, (err) => {
           console.log(err);
         });
   }
 
-  onFileChange(event) {
-    let reader = new FileReader();
-   
-    if(event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
-      reader.readAsDataURL(file);
-    
-      reader.onload = () => {
-        this.productForm.patchValue({
-          'prod_file': reader.result
-        });
-        
-        // need to run CD since file load runs outside of zone
-        this.cd.markForCheck();
-      };
-    }
+  cancelEdit() {
+    this.startLoading();
+    this.router.navigate(['/products']);
+    this.completeLoading();
   }
 
+  startLoading() {
+    this.slimLoadingBarService.start(() => {
+        console.log('Loading complete');
+    });
+  }
+
+  stopLoading() {
+      this.slimLoadingBarService.stop();
+  }
+
+  completeLoading() {
+      this.slimLoadingBarService.complete();
+  }
 }
