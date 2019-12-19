@@ -24,7 +24,7 @@ import { ProductEditComponent } from './product-edit/product-edit.component';
 import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { FileDropDirective, FileSelectDirective } from "ng2-file-upload";
+import { FileUploadModule } from 'ng2-file-upload';
 import { RouterModule } from "@angular/router";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -37,7 +37,7 @@ import { MatFileUploadModule } from 'angular-material-fileupload';
     ProductDetailComponent,
     ProductAddComponent,
     ProductEditComponent,
-    SideNavComponent, FileSelectDirective, FileDropDirective
+    SideNavComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +56,8 @@ import { MatFileUploadModule } from 'angular-material-fileupload';
     MatCardModule,
     MatFormFieldModule, SlimLoadingBarModule.forRoot(), MatProgressBarModule,
     MatSidenavModule, MatToolbarModule, LayoutModule, MatListModule,
-    MatExpansionModule, MatTabsModule, MatSlideToggleModule, MatFileUploadModule,
+    MatExpansionModule, MatTabsModule, MatSlideToggleModule, MatFileUploadModule, 
+    FileUploadModule,
     RouterModule.forRoot([
       {path: '', component: ProductAddComponent}
     ]/*, {useHash: false}*/),

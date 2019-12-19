@@ -4,7 +4,10 @@ import { Product } from '../product';
 import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource, MatPaginator } from '@angular/material';
-import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
+import { SlimLoadingBarService } from 'ng2-slim-loading-bar';
+import { FileUploader } from 'ng2-file-upload';
+
+const URL = 'http://localhost:8080/uploadImagesProduct';
 
 @Component({
   selector: 'app-products',
@@ -13,6 +16,12 @@ import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 })
 export class ProductsComponent implements OnInit, AfterViewInit {
 
+
+
+  uploader:FileUploader;
+  hasBaseDropZoneOver:boolean;
+  hasAnotherDropZoneOver:boolean;
+  response:string;
 
   displayedColumns: string[] = ['sku', 'nameProduct', 'description', 'priceList', 'priceSell', 'stock', 'active'];
   dataSource = new MatTableDataSource<Product>();
@@ -27,7 +36,43 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private slimLoadingBarService: SlimLoadingBarService, private api: ApiService, private formBuilder: FormBuilder) { }
+  constructor(private slimLoadingBarService: SlimLoadingBarService, private api: ApiService, private formBuilder: FormBuilder) { 
+    
+    this.uploader = new FileUploader({
+      url: URL,
+      disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
+      formatDataFunctionIsAsync: true,
+      formatDataFunction: async (item) => {
+        return new Promise( (resolve, reject) => {
+          resolve({
+            name: item._file.name,
+            length: item._file.size,
+            contentType: item._file.type,
+            date: new Date()
+          });
+        });
+      }
+    });
+ 
+    this.hasBaseDropZoneOver = false;
+    this.hasAnotherDropZoneOver = false;
+ 
+    this.response = '';
+ 
+    this.uploader.response.subscribe( res => this.response = res );
+
+
+  }
+
+  public fileOverBase(e:any):void {
+    this.hasBaseDropZoneOver = e;
+  }
+ 
+  public fileOverAnother(e:any):void {
+    this.hasAnotherDropZoneOver = e;
+  }
+
+  
 
   ngOnInit() {
     this.f_firstPanel = true;
@@ -105,6 +150,10 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+
+    this.uploader.onAfterAddingFile = (item => {
+      item.withCredentials = false;
+    });
   }
 
   delete() {
