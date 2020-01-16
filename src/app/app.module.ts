@@ -24,11 +24,10 @@ import { ProductEditComponent } from './product-edit/product-edit.component';
 import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { FileUploadModule } from 'ng2-file-upload';
 import { RouterModule } from "@angular/router";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatFileUploadModule } from 'angular-material-fileupload';
+import { DragDropDirective } from './drag-drop.directive';
 
 @NgModule({
   declarations: [
@@ -37,7 +36,8 @@ import { MatFileUploadModule } from 'angular-material-fileupload';
     ProductDetailComponent,
     ProductAddComponent,
     ProductEditComponent,
-    SideNavComponent
+    SideNavComponent,
+    DragDropDirective
   ],
   imports: [
     BrowserModule,
@@ -56,8 +56,7 @@ import { MatFileUploadModule } from 'angular-material-fileupload';
     MatCardModule,
     MatFormFieldModule, SlimLoadingBarModule.forRoot(), MatProgressBarModule,
     MatSidenavModule, MatToolbarModule, LayoutModule, MatListModule,
-    MatExpansionModule, MatTabsModule, MatSlideToggleModule, MatFileUploadModule, 
-    FileUploadModule,
+    MatExpansionModule, MatTabsModule, MatSlideToggleModule,
     RouterModule.forRoot([
       {path: '', component: ProductAddComponent}
     ]/*, {useHash: false}*/),

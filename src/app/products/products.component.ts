@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Product } from '../product';
-import { FormControl, FormGroupDirective, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { SlimLoadingBarService } from 'ng2-slim-loading-bar';
-import { FileUploader } from 'ng2-file-upload';
-
-const URL = 'http://localhost:8080/uploadImagesProduct';
+import { HttpEventType, HttpErrorResponse } from '@angular/common/http';
+import { of } from 'rxjs';  
+import { catchError, map } from 'rxjs/operators'; 
 
 @Component({
   selector: 'app-products',
@@ -16,16 +16,9 @@ const URL = 'http://localhost:8080/uploadImagesProduct';
 })
 export class ProductsComponent implements OnInit, AfterViewInit {
 
-
-
-  uploader:FileUploader;
-  hasBaseDropZoneOver:boolean;
-  hasAnotherDropZoneOver:boolean;
-  response:string;
-
   displayedColumns: string[] = ['sku', 'nameProduct', 'description', 'priceList', 'priceSell', 'stock', 'active'];
   dataSource = new MatTableDataSource<Product>();
- 
+
   //formulario edicion
   productForm: FormGroup;
   _id:string='';
@@ -35,44 +28,11 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild("fileUpload") fileUpload: ElementRef; files: any  = [];  
 
   constructor(private slimLoadingBarService: SlimLoadingBarService, private api: ApiService, private formBuilder: FormBuilder) { 
-    
-    this.uploader = new FileUploader({
-      url: URL,
-      disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
-      formatDataFunctionIsAsync: true,
-      formatDataFunction: async (item) => {
-        return new Promise( (resolve, reject) => {
-          resolve({
-            name: item._file.name,
-            length: item._file.size,
-            contentType: item._file.type,
-            date: new Date()
-          });
-        });
-      }
-    });
- 
-    this.hasBaseDropZoneOver = false;
-    this.hasAnotherDropZoneOver = false;
- 
-    this.response = '';
- 
-    this.uploader.response.subscribe( res => this.response = res );
-
-
-  }
-
-  public fileOverBase(e:any):void {
-    this.hasBaseDropZoneOver = e;
-  }
- 
-  public fileOverAnother(e:any):void {
-    this.hasAnotherDropZoneOver = e;
-  }
-
   
+  }
 
   ngOnInit() {
     this.f_firstPanel = true;
@@ -99,7 +59,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   selectRow(row) {
-    console.log(row);
     this.startLoading();
 
     this.f_firstPanel = false;
@@ -116,6 +75,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       stock: row.stock,
       active: row.active
     });
+
+//llamar servicio para obtener producto y fotos subidas
+
     this.completeLoading();
 
   }
@@ -125,6 +87,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.f_firstPanel = true;
     this.f_secondPanel = false;
     this.completeLoading();
+    this.files = [];
   }
 
   //modificar producto
@@ -135,12 +98,24 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     let active = form['active'] ? 1 : 0;
     form['active'] = active;
 
-    this.api.updateProduct(this._id, form)
+    var formData = new FormData();
+
+    formData.append("product", JSON.stringify(form));
+    //formData.append("files", this.files);
+    
+    this.files.forEach(file => {  
+      formData.append("files",file);
+    });  
+
+    this.api.updateProductMultipleImages(formData)
       .subscribe(res => {
           this.completeLoading();
           this.f_firstPanel = true;
           this.f_secondPanel = false;
           this.ngOnInit();
+          this.files = [];
+          formData = new FormData();
+
         }, (err) => {
           console.log(err);
           this.stopLoading();
@@ -150,10 +125,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-
-    this.uploader.onAfterAddingFile = (item => {
-      item.withCredentials = false;
-    });
   }
 
   delete() {
@@ -192,4 +163,17 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
+
+  uploadFile(event) {
+      for (let index = 0; index < event.length; index++) {
+        const element = event[index];
+        this.files.push(element)
+      }  
+  }
+  
+  deleteAttachment(index) {
+      this.files.splice(index, 1)
+  }
+
+
 }

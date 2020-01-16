@@ -39,7 +39,7 @@ export class ProductEditComponent implements OnInit {
   }
 
   onFormSubmit(form:NgForm) {
-    this.api.updateProduct(this._id, form)
+    this.api.updateProduct(form)
       .subscribe(res => {
           let id = res['_id'];
           this.router.navigate(['/products']);

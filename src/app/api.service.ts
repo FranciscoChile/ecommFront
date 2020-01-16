@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpErrorResponse, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { catchError, tap, map } from 'rxjs/operators';
 import { Product } from './product';
 import { FilesUpload } from './filesUpload'
@@ -16,6 +16,23 @@ const apiUrl = "http://localhost:8080/products";
 export class ApiService {
 
   constructor(private http: HttpClient) { }
+
+  //retorna porcentaje de subida de cada archivo
+  public uploadImagesProduct(formData) {
+
+    return this.http.post(apiUrl + '/uploadImagesProduct', formData, {
+      reportProgress: true,
+      observe: 'events'   
+    })
+    .subscribe(events => {
+        if(events.type == HttpEventType.UploadProgress) {
+            console.log('Upload progress: ', Math.round(events.loaded / events.total * 100) + '%');
+        } else if(events.type === HttpEventType.Response) {
+            console.log(events);
+        }
+    });
+
+  }  
 
   getProducts (): Observable<Product[]> {
     return this.http.get<Product[]>(apiUrl)
@@ -34,40 +51,30 @@ export class ApiService {
   }
 
   addProduct (product: Product): Observable<Product> {
-
-    return this.http.post<Product>(apiUrl, product, httpOptions)
+    return this.http.post<Product>(apiUrl, product)
       .pipe(
         tap((product: Product) => console.log('added product w/ id=${product.idProduct}')),
         catchError(this.handleError('addProduct', product))
       );
-
-    // return this.http.post<Product>(apiUrl, product, httpOptions).pipe(
-    //   tap((product: Product) => console.log('added product w/ id=${product.idProduct}')),
-    //   catchError(this.handleError<Product>('addProduct'))
-    // );
-
   }
 
-  addFile (file): Observable<FilesUpload> {
-    return this.http.post<FilesUpload>(apiUrl + '/uploadFiles', file, httpOptions).pipe(
-      tap((file: FilesUpload) => console.log('added file w/ id=${file.id}')),
-      catchError(this.handleError<FilesUpload>('addFile'))
-    );
-  }
-
-  updateProduct (id, product): Observable<any> {
-    const url = '${apiUrl}/${id}';
+  
+  updateProduct (product): Observable<any> {
     return this.http.post(apiUrl, product, httpOptions).pipe(
       tap(_ => console.log('updated product id=${id}')),
       catchError(this.handleError<any>('updateProduct'))
     );
   }
 
+  updateProductMultipleImages (product): Observable<any> {
+    return this.http.post(apiUrl + "/multiple-images", product).pipe(
+      tap(_ => console.log('updated product id=${id}')),
+      catchError(this.handleError<any>('updateProduct'))
+    );
+  }
+
   deleteProduct (id): Observable<Product> {
-    //const url = '${apiUrl}/${id}';
-
-let url = apiUrl + "/" + id;
-
+    let url = apiUrl + "/" + id;
     return this.http.delete<Product>(url, httpOptions).pipe(
       tap(_ => console.log('deleted product id=${id}')),
       catchError(this.handleError<Product>('deleteProduct'))
